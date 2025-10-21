@@ -32,13 +32,20 @@ y_pred = rf.predict(X_test)
 mae = mean_absolute_error(y_test, y_pred)
 print(f"📊 Mean Absolute Error: {mae:.2f}")
 
-# ✅ Step 7: Save Model & TF-IDF Vectorizer
+
+# ✅ Step 7: Save Model & TF-IDF Vectorizer with Error Handling
 save_dir = "training_a_model"
 os.makedirs(save_dir, exist_ok=True)  # Ensure directory exists
 
-joblib.dump(rf, os.path.join(save_dir, "random_forest_model.pkl"))
-joblib.dump(tfidf, os.path.join(save_dir, "tfidf_vectorizer.pkl"))
-print("✅ Model & Vectorizer Saved Successfully!")
+try:
+    joblib.dump(rf, os.path.join(save_dir, "random_forest_model.pkl"))
+    joblib.dump(tfidf, os.path.join(save_dir, "tfidf_vectorizer.pkl"))
+    print("✅ Model & Vectorizer Saved Successfully!")
+except PermissionError:
+    print("❌ Permission denied: Unable to save model files. Check folder access rights.")
+except Exception as e:
+    print(f"❌ Failed to save model/vectorizer: {e}")
+    
 
 # ✅ Step 8: Make Predictions on New Ingredients
 new_ingredients = [
