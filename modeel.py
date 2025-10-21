@@ -6,9 +6,21 @@ from sklearn.metrics import mean_absolute_error
 import joblib  # For saving & loading model
 import os      # For handling file paths
 
-# ✅ Step 1: Load Dataset
-file_path = "training_a_model/cleaned_ingredients_dataset.csv"  # Corrected path
-df = pd.read_csv(file_path)
+
+# ✅ Step 1: Load Dataset with Error Handling
+file_path = "training_a_model/cleaned_ingredients_dataset.csv"
+
+if not os.path.exists(file_path):
+    raise FileNotFoundError(
+        f"❌ Dataset not found at '{file_path}'. Please ensure the file exists or provide the correct path."
+    )
+try:
+    df = pd.read_csv(file_path)
+except pd.errors.EmptyDataError:
+    raise ValueError("❌ The dataset file is empty. Please check your CSV file.")
+except pd.errors.ParserError:
+    raise ValueError("❌ The dataset file is corrupted or unreadable.")
+
 
 # ✅ Step 2: Preprocess Data (Remove Spaces & Missing Values)
 df.dropna(inplace=True)  # Remove missing values
@@ -45,7 +57,7 @@ except PermissionError:
     print("❌ Permission denied: Unable to save model files. Check folder access rights.")
 except Exception as e:
     print(f"❌ Failed to save model/vectorizer: {e}")
-    
+
 
 # ✅ Step 8: Make Predictions on New Ingredients
 new_ingredients = [
